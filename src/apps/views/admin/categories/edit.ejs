@@ -1,0 +1,27 @@
+<%- include("../layout/Header.ejs", {title: "Edit category"})%>
+<section class="position-relative py-4 py-xl-5">
+    <div class="container position-relative">
+        <div class="row mb-5">
+            <div class="col-md-8 col-xl-6 text-center mx-auto">
+                <h2 style="font-weight: bold;">Edit category "<%=categories.title%>"</h2>
+            </div>
+        </div>
+        <div class="row d-flex justify-content-center">
+            <div class="col-md-6 col-lg-5 col-xl-4">
+                <div>
+                    <form class="p-3 p-xl-4" role="form" method="post" action="/admin/categories/update/<%=categories._id%>">
+                        <% if(data && data.error){ %>
+                            <div class="alert alert-danger"><%=data.error%></div>
+                        <% }%>
+                        <div class="mb-3"><input class="form-control" type="text" id="name-1" name="title" value="<%=categories.title%>"></div>
+                        <div><button class="btn btn-primary d-block w-100" type="submit">Submit</button></div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+</div>
+
+
+<%- include("../layout/Footer.ejs")%>      

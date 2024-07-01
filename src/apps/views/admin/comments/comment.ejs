@@ -1,0 +1,115 @@
+<%- include("../layout/Header.ejs", {title: "Comment Management"})%>
+<% const createPageLink = (page) => `/admin/comments?page=${page}&${queryString}`; %>
+
+<div class="container-fluid">
+  <h3 class="text-dark mb-4"></h3>
+  <div class="card shadow">
+    <p class="text-start text-primary m-0 fw-bold">Comment Info</p>
+    <br/>
+    <form action="/admin/comments" method="GET" class="row g-3">
+        <div class="row">
+          <div class="col">
+            <label for="email" class="form-label">Email</label>
+            <input value="<%= searchParams.email || '' %>" type="text" class="form-control" id="email" name="email">
+          </div>
+          <div class="col">
+            <label for="productName" class="form-label">Product Name</label>
+            <input value="<%= searchParams.productName || '' %>" type="text" class="form-control" id="productName" name="productName">
+          </div>
+        </div>
+        <div class="mb-3">
+            <label for="rating" class="form-label">Rating</label>
+            <input value="<%= searchParams.rating || '' %>" type="number" class="form-control" id="rating" name="rating" min="1" max="5" step="1">
+          </div>
+        <div style="text-align: center;">
+            <button type="submit" class="btn btn-primary" style="width: 100px;">Submit</button>
+        </div>
+      </form>     
+      <div class="card-body">
+        <% if (totalComments === 0) { %>
+            <p class="text-center">Users have not commented on any products yet.</p>
+        <% } else { %>
+          <div class="table-responsive table mt-2" id="dataTable" role="grid" aria-describedby="dataTable_info">
+              <table class="table my-0 text-center table-bordered table-striped table-hover" id="dataTable">
+                  <thead>
+                      <tr>
+                          <th>ID</th>
+                          <th>Email</th>
+                          <th>User name</th>
+                          <th>Content</th>
+                          <th>Rating</th>
+                          <th>Product name</th>
+                          <th>Product Image</th>
+                          <th>Action</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                    <% let count = 1 + limit * (currentPage - 1); %>
+                    <% for (comment of comments) { %>
+                      <tr>
+                          <td><%= count %></td>
+                          <td><%= comment.user_id.email %></td>
+                          <td><%= comment.user_id.first_name %> <%= comment.user_id.last_name %></td>
+                          <td><%= comment.content%></td>
+                          <td><%= comment.rating%></td>
+                          <td><%= comment.product_id.name %></td>
+                          <td style="text-align: center"><img width="100" height="150" src="<%= comment.product_id.image %>" /></td>
+                          <td>
+                            <a class="btn btn-danger del-button" onclick="confirmDelete('<%= comment._id %>', '<%= comment.product_id.name %>', '<%= comment.user_id.first_name %> <%= comment.user_id.last_name %>')">
+                                <i class="fas fa-trash-alt"></i>
+                            </a>
+                            </td>
+                      </tr>
+                      <% count++; %>
+                      <% } %>         
+                  </tbody>
+                  <tfoot>
+                      <tr></tr>
+                  </tfoot>
+              </table>
+          </div>
+          <% } %>
+          <div class="row">
+              <div class="col-md-6 col-lg-12">
+                  <nav class="d-lg-flex justify-content-lg-end dataTables_paginate paging_simple_numbers">
+                      <ul class="pagination">
+                        <% if (currentPage > 1) { %>
+                            <li class="page-item">
+                                <a class="page-link" href="<%= createPageLink(currentPage - 1) %>">Previous</a>
+                            </li>
+                        <% } %>
+                        <% for (let pageNum of specifiedPages) { %>
+                            <li class="page-item <%= pageNum === currentPage ? 'active' : '' %>">
+                                <% if (pageNum === "...") { %>
+                                    <span class="page-link"><%= pageNum %></span>
+                                <% } else { %>
+                                    <a class="page-link" href="<%= createPageLink(pageNum) %>"><%= pageNum %></a>
+                                <% } %>
+                            </li>
+                        <% } %>
+                        <% if (currentPage < totalPages) { %>
+                            <li class="page-item">
+                                <a class="page-link" href="<%= createPageLink(currentPage + 1) %>">Next</a>
+                            </li>
+                        <% } %>
+                      </ul>
+                  </nav>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
+</div>
+
+<script>
+    function confirmDelete(id, productName, userName) {
+        if (confirm("Are you sure want to delete " + userName + "'s comment about " + productName +"?")) {
+            window.location.href = "/admin/comments/delete/" + id;
+        } else {
+            return false;
+        }
+    }
+</script>
+
+
+<%- include("../layout/Footer.ejs")%>       

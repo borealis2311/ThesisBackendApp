@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html data-bs-theme="light" lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title><%=title%></title>
+    <base href="/static/admin/assets/">
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="fonts/fontawesome-all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+</head>
+
+<body id="page-top">
+    <div id="wrapper" style="min-height: 100vh;">
+        <nav class="navbar align-items-start sidebar sidebar-dark accordion p-0 navbar-dark" style="background-color: #0d6efd;">
+            <div class="container-fluid d-flex flex-column p-0">
+                <a class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0" href="/admin/dashboard">
+                    <img src="img/icon.png" alt="Icon" style="width: 150px;">
+                </a>
+                <hr class="sidebar-divider my-0">
+                <ul class="navbar-nav text-light flex-column flex-grow-1" id="accordionSidebar">
+                    <li class="nav-item"><a class="nav-link" href="/admin/dashboard"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
+                    <li class="nav-item"><a class="nav-link" href="/admin/categories"><i class="fas fa-table"></i><span>Category</span></a></li>
+                    <li class="nav-item"><a class="nav-link" href="/admin/comments"><i class="fas fa-comment"></i></i><span>Comment</span></a></li>
+                    <li class="nav-item"><a class="nav-link" href="/admin/products"><i class="fas fa-glass-whiskey"></i><span>Products</span></a></li>
+                    <li class="nav-item"><a class="nav-link" href="/admin/users"><i class="fas fa-users"></i><span>Users</span></a></li>
+                    <li class="nav-item"><a class="nav-link" href="/admin/cart"><i class="fas fa-shopping-cart"></i><span>Cart</span></a></li>
+                    <li class="nav-item"><a class="nav-link" href="/admin/logout"><i class="fas fa-sign-out-alt"></i><span>Log out</span></a></li>
+                </ul>
+                <div class="text-center d-none d-md-inline"></div>
+            </div>
+        </nav>
+
+
+        <div class="d-flex flex-column" id="content-wrapper">
+            <div id="content">

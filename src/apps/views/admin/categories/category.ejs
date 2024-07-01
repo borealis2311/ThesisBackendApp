@@ -1,0 +1,99 @@
+<%- include("../layout/Header.ejs", {title: "Category Management"})%>
+<% const createPageLink = (page) => `/admin/categories?page=${page}&${queryString}`; %>
+
+<div class="container-fluid">
+    <h3 class="text-dark mb-4"></h3>
+    <div class="card shadow">
+        <div class="card-header text-center py-3">
+            <a href="/admin/categories/create" class="btn btn-primary" type="button">
+                <i class="fas fa-plus"></i>&nbsp; Add
+            </a>
+            <p class="text-start text-primary m-0 fw-bold">Category Info</p>
+            <form action="/admin/categories" method="GET" class="row g-3">
+                <div class="col-md-6">
+                    <input class="form-control" type="text" value="<%= searchParams.name || '' %>" placeholder="Name" name="name">
+                </div>
+                <button type="submit" class="btn btn-primary">Filter</button>
+            </form>
+        </div>
+        <div class="card-body">
+            <% if (totalCategories === 0) { %>
+                <p class="text-center">No categories available. Please add a new category.</p>
+            <% } else { %>
+                <div class="table-responsive table mt-2" id="dataTable" role="grid" aria-describedby="dataTable_info">
+                    <table class="table my-0 text-center table-bordered table-striped table-hover" id="dataTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Title</th>
+                                <th>Number of products</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% let count = 1 + limit * (currentPage - 1); %>
+                            <% for (category of categories) { %>
+                                <tr>
+                                    <th scope="row"><%= count %></th>
+                                    <td><%= category.title %></td>
+                                    <td><%= category.productCount %></td>
+                                    <td>
+                                        <a href="/admin/categories/edit/<%= category._id %>" title="Edit" class="btn btn-primary">
+                                            <i class="fas fa-pencil-alt"></i>
+                                        </a>
+                                        <a class="btn btn-danger del-button" onclick="confirmDelete('<%= category._id %>', '<%= category.title %>')">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                <% count++; %>
+                            <% } %>                        
+                        </tbody>
+                        <tfoot>
+                            <tr></tr>
+                        </tfoot>
+                    </table>
+                </div>
+            <% } %>
+            <div class="row">
+                <div class="col-md-6 col-lg-12">
+                    <nav class="d-lg-flex justify-content-lg-end dataTables_paginate paging_simple_numbers">
+                        <ul class="pagination">
+                            <% if (currentPage > 1) { %>
+                                <li class="page-item">
+                                    <a class="page-link" href="<%= createPageLink(currentPage - 1) %>">Previous</a>
+                                </li>
+                            <% } %>
+                            <% for (let pageNum of specifiedPages) { %>
+                                <li class="page-item <%= pageNum === currentPage ? 'active' : '' %>">
+                                    <% if (pageNum === "...") { %>
+                                        <span class="page-link"><%= pageNum %></span>
+                                    <% } else { %>
+                                        <a class="page-link" href="<%= createPageLink(pageNum) %>"><%= pageNum %></a>
+                                    <% } %>
+                                </li>
+                            <% } %>
+                            <% if (currentPage < totalPages) { %>
+                                <li class="page-item">
+                                    <a class="page-link" href="<%= createPageLink(currentPage + 1) %>">Next</a>
+                                </li>
+                            <% } %>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function confirmDelete(id, name) {
+        if (confirm("Are you sure you want to delete category " + name + "? Note, products in this category will also be deleted")) {
+            window.location.href = "/admin/categories/delete/" + id;
+        } else {
+            return false;
+        }
+    }
+</script>
+
+<%- include("../layout/Footer.ejs") %>

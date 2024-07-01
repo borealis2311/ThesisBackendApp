@@ -1,0 +1,200 @@
+<%- include("./layout/Header.ejs", {title: "Dashboard"}) %>
+
+<div class="container-fluid">
+    <div class="d-sm-flex justify-content-between align-items-center mb-4">
+        <h3 class="text-dark mb-0">Dashboard</h3>
+    </div>
+    <div class="row">
+        <div class="col-md-6 col-xl-3 mb-4">
+            <div class="card shadow border-left-primary py-2">
+                <div class="card-body">
+                    <div class="row g-0 align-items-center">
+                        <div class="col me-2">
+                            <div class="text-uppercase text-primary fw-bold text-xs mb-1"><span>Users</span></div>
+                            <div class="text-dark fw-bold h5 mb-0"><span><%= totalUsers %></span></div>
+                        </div>
+                        <div class="col-auto"><i class="fas fa-users fa-2x text-gray-300"></i></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-xl-3 mb-4">
+            <div class="card shadow border-left-success py-2">
+                <div class="card-body">
+                    <div class="row g-0 align-items-center">
+                        <div class="col me-2">
+                            <div class="text-uppercase text-success fw-bold text-xs mb-1"><span>Earnings</span></div>
+                            <div class="text-dark fw-bold h5 mb-0"><span><%= totalPrices %>$</span></div>
+                        </div>
+                        <div class="col-auto"><i class="fas fa-dollar-sign fa-2x text-gray-300"></i></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-xl-3 mb-4">
+            <div class="card shadow border-left-info py-2">
+                <div class="card-body">
+                    <div class="row g-0 align-items-center">
+                        <div class="col me-2">
+                            <div class="text-uppercase text-info fw-bold text-xs mb-1"><span>Number of orders</span></div>
+                            <div class="row g-0 align-items-center">
+                                <div class="col-auto">
+                                    <div class="text-dark fw-bold h5 mb-0 me-3"><span><%= totalOrders %></span></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-auto"><i class="fas fa-clipboard-list fa-2x text-gray-300"></i></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-xl-3 mb-4">
+            <div class="card shadow border-left-warning py-2">
+                <div class="card-body">
+                    <div class="row g-0 align-items-center">
+                        <div class="col me-2">
+                            <div class="text-uppercase text-info fw-bold text-xs mb-1"><span>Evaluate</span></div>
+                            <div class="row g-0 align-items-center">
+                                <div class="col-auto">
+                                    <div class="text-dark fw-bold h5 mb-0 me-3"><span><%= totalComments %></span></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-auto"><i class="fas fa-comments fa-2x text-gray-300"></i></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">        
+        <div class="col-md-6">
+            <div class="card shadow mb-4">
+                <div class="card-header d-flex justify-content-center align-items-center">
+                    <h6 class="text-primary fw-bold m-0">Order By Day Of The Week</h6>                    
+                </div>
+                <div class="card-body text-center">
+                    <div class="chart-area"><div id="orderPieChart"></div></div>                    
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card shadow mb-4">
+                <div class="card-header d-flex justify-content-center align-items-center">
+                    <h6 class="text-primary fw-bold m-0">Revenue By Day Of The Week($)</h6>                    
+                </div>
+                <div class="card-body text-center">
+                    <div class="chart-area"><div id="revenuePieChart"></div></div>                       
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">        
+        <div class="col-md-6">
+            <div class="card shadow mb-4">
+                <div class="card-header d-flex justify-content-center align-items-center">
+                    <h6 class="text-primary fw-bold m-0">Top Rated</h6>                    
+                </div>
+                <div class="card-body text-center">
+                    <% for(user of topUsers){ %>
+                        <p>
+                            <span style="float: left;"><%=user.first_name%> <%=user.last_name%></span>
+                            <span style="float: right;"><i class="fas fa-star"></i><%=user.averageRating.toFixed(2)%></span>
+                        </p>
+                        <div style="clear: both;"></div>
+                    <% } %>                 
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card shadow mb-4">
+                <div class="card-header d-flex justify-content-center align-items-center">
+                    <h6 class="text-primary fw-bold m-0">Top Product Rated</h6>                    
+                </div>
+                <div class="card-body text-center">
+                <% for(product of topProducts){ %>
+                    <p>
+                        <span style="float: left;"><%=product.product_name%></span>
+                        <span style="float: right;"><i class="fas fa-star"></i><%=product.averageRating.toFixed(2)%></span>
+                    </p>
+                    <div style="clear: both;"></div>
+                <% } %> 
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<script>
+    function createPieChart(data, elementId, width = 366, height = 250) {
+        var radius = Math.min(width, height) / 2;
+        var color = d3.scaleOrdinal(d3.schemeCategory10);
+        var pie = d3.pie().value(function(d) { return d.value; }).sort(null);
+        var arc = d3.arc().outerRadius(radius - 10).innerRadius(0);
+    
+        var svg = d3.select(elementId)
+            .append("svg")
+            .attr("width", width)
+            .attr("height", height)
+            .append("g")
+            .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+    
+        var g = svg.selectAll(".arc")
+            .data(pie(data))
+            .enter().append("g")
+            .attr("class", "arc");
+    
+        var tooltip = d3.select("body")
+            .append("div")
+            .style("position", "absolute")
+            .style("visibility", "hidden")
+            .style("background", "#fff")
+            .style("border-radius", "5px")
+            .style("padding", "10px")
+            .style("box-shadow", "0 0 10px rgba(0,0,0,0.5)");
+    
+        g.append("path")
+            .attr("d", arc)
+            .style("fill", function(d) { return color(d.data.day); })            
+            .on("mouseover", function(d) {
+                d3.select(this).style("opacity", 0.5);
+                tooltip.style("visibility", "visible");
+                tooltip.html(d.data.day + ": " + d.data.value);
+            })
+            .on("mousemove", function() {
+                tooltip.style("top", (d3.event.pageY-10)+"px").style("left",(d3.event.pageX+10)+"px");
+            })
+            .on("mouseout", function(){
+                d3.select(this).style("opacity", 1);
+                return tooltip.style("visibility", "hidden");
+            });
+    }
+    
+    let daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    
+    var dataOrders = Object.values(<%- JSON.stringify(ordersByDay) %>).map((value, index) => {
+        return {
+            day: daysOfWeek[index],
+            value: value
+        };
+    });
+
+    var dataRevenues = Object.values(<%- JSON.stringify(revenueByDay) %>).map((value, index) => {
+        return {
+            day: daysOfWeek[index],
+            value: value
+        };
+    });
+
+    function sortDataByDay(data) {
+        data.sort(function(a, b) {
+            return daysOfWeek.indexOf(a.day) - daysOfWeek.indexOf(b.day);
+        });
+    }
+
+    sortDataByDay(dataOrders);
+    sortDataByDay(dataRevenues);
+    
+    createPieChart(dataOrders, "#orderPieChart");
+    createPieChart(dataRevenues, "#revenuePieChart");
+    </script>
+<%- include("./layout/Footer.ejs")%>       

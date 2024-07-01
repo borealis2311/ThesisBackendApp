@@ -1,0 +1,55 @@
+<%- include("../layout/Header.ejs", {title: "Cart Information"})%>
+
+<div class="container-fluid">
+  <h3 class="text-dark mb-4">Cart Information</h3>
+  <div class="card shadow">
+      <div class="card-body">
+          <div class="table-responsive table mt-2" id="dataTable" role="grid" aria-describedby="dataTable_info">
+              <table class="table my-0 text-center table-bordered table-striped table-hover" id="dataTable">
+                  <thead>
+                      <tr>
+                          <th>Product name</th>
+                          <th>Quantity</th>
+                          <th>Price</th>   
+                          <th>Total</th>                        
+                      </tr>
+                  </thead>
+                  <tbody>
+                    <% for (item of order.items) { %>
+                        <tr>
+                            <td><%= item.name %></td>
+                            <td><%= item.qty %></td>
+                            <td><%= item.price %>$</td>
+                            <td><%= parseInt(item.qty) * parseFloat(item.price) %>$</td> 
+                        </tr>
+                      <% } %>                            
+                  </tbody>
+                  <tfoot>
+                      <tr>
+                          <td colspan="3" class="text-right">Total price</td>
+                          <td><%= order.totalPrice %>$</td>
+                      </tr>
+                  </tfoot>
+              </table>
+              <br/>
+              <div class="d-flex row justify-content-between align-items-center">
+                <form class="p-3 p-xl-4" role="form" method="post" action="/admin/cart/update/<%=order._id%>">
+                  <div class="col-md-6">
+                  <select name="status" class="form-control" style="width: 175.6px;">
+                    <% for(status of statusEnumValues){ %>
+                      <option value="<%= status %>" <%= (status === order.status) ? 'selected' : '' %>><%= status %></option>
+                    <% } %>
+                  </select>
+                  </div>
+                  <div>
+                  <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+                </form>
+              </div>              
+          </div>
+      </div>
+  </div>
+</div>
+
+
+<%- include("../layout/Footer.ejs")%>

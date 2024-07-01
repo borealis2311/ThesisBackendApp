@@ -1,0 +1,59 @@
+<%- include("../layout/Header.ejs", {title: "Add new product"})%>
+
+<div class="container-fluid">
+    <div class="d-sm-flex justify-content-between align-items-center mb-4"></div>
+</div>
+<section class="position-relative py-4 py-xl-5">
+    <div class="container">
+        <div class="row mb-5">
+            <div class="col-md-8 col-xl-6 text-center mx-auto">
+                <h2>Add product</h2>
+            </div>
+        </div> 
+    </div>
+    <div class="container-fluid">
+        <form role="form" method="post" enctype="multipart/form-data" action="/admin/products/store">
+            <div class="row">
+                <div class="col-sm-12 col-md-6 col-lg-6">
+                    <div class="mb-3"><label class="form-label"><strong>Name</strong></label>
+                        <input class="form-control" type="text" name="name" placeholder="Product name" required></div>
+                </div>
+                <div class="col"><label class="form-label"><strong>Price</strong></label>
+                    <input class="form-control" type="text" name="price" placeholder="Price" required></div>
+            </div>
+            <div class="mb-3"><label class="form-label"><strong>Image</strong></label>
+                <input class="form-control" type="file" name="image"></div>
+            <div class="row mb-2">
+                <div class="col">
+                    <div class="mb-3"><label class="form-label"><strong>Category</strong></label>
+                        <select name="category_id" class="form-control">
+                            <% for(category of categories){ %>
+                                <option value=<%=category._id%>><%=category.title%></option>
+                            <% } %>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="row mb-2">
+                <div class="col">
+                    <div class="mb-3"><label class="form-label"><strong>Description</strong></label>
+                        <textarea class="form-control" name="description" placeholder="Description" required></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="row mb-2">
+                <div class="col">
+                    <div class="mb-3" style="margin-top: 40px;"><label class="form-label"><strong>Featured</strong></label>
+                        <input type="checkbox" value="yes" name="featured" style="margin-left: 22px;"></div>
+                </div>
+                <div class="col">
+                    <div class="mb-3" style="margin-top: 40px;"><label class="form-label"><strong>Is Stock</strong></label>
+                        <input type="checkbox" value="yes" name="is_stock" style="margin-left: 22px;"></div>
+                </div>
+            </div>
+            <button class="btn btn-primary btn-lg" type="submit">Submit</button>
+        </form>
+    </div>
+</section>
+
+<%- include("../layout/Footer.ejs")%>

@@ -1,0 +1,102 @@
+<%- include("../layout/Header.ejs", {title: "Cart Management"})%>
+<% const createPageLink = (page) => `/admin/cart?page=${page}&${queryString}`; %>
+
+<div class="container-fluid">
+  <h3 class="text-dark mb-4">Cart Information</h3>
+  <div class="card shadow">
+      <div class="card-body">
+        <div class="d-flex justify-content-between mb-3">
+          <form class="form-inline" method="GET" action="/admin/cart">
+            <div class="form-group">
+              <label for="status" class="mr-2">Status:</label>
+              <select class="form-control mr-2" id="status" name="status">
+                <% for (let i = 0; i < numOfStatus; i++) { %>
+                    <option value="<%= statusEnumValues[i] %>" <%= statusEnumValues[i] === selectedStatus ? 'selected' : '' %>><%= statusEnumValues[i] %></option>
+                <% } %>
+              </select>            
+            </div>
+
+            <div class="form-group ml-2">
+              <label for="createdAt" class="mr-2">Date:</label>
+              <input value="<%= searchParams.name || '' %>" type="date" class="form-control" id="createdAt" name="createdAt">
+            </div>
+            <br/>
+            <button type="submit" class="btn btn-primary">Filter</button>
+          </form>
+        </div>
+
+        <% if (totalOrders === 0) { %>
+            <p class="text-center">There are no items in the cart yet.</p>
+        <% } else { %>
+          <div class="table-responsive table mt-2" id="dataTable" role="grid" aria-describedby="dataTable_info">
+              <table class="table my-0 text-center table-bordered table-striped table-hover" id="dataTable">
+                  <thead>
+                      <tr>
+                          <th>ID</th>
+                          <th>Email</th>
+                          <th>Total Price</th>
+                          <th>Status</th>
+                          <th>Date Order</th>
+                          <th>Date Approved</th>
+                          <th>Actions</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                    <% let count = 1 + limit * (currentPage - 1); %>
+                    <% for (order of orders) { %>
+                      <tr>
+                          <td><%= count %></td>
+                          <td><%= order.email %></td>
+                          <td><%= order.totalPrice %>$</td>
+                          <td><%= order.status %></td>
+                          <td><%= new Intl.DateTimeFormat('en-GB', { timeZone: 'UTC' }).format(new Date(order.createdAt)) %></td>
+                          <td><%= new Intl.DateTimeFormat('en-GB', { timeZone: 'UTC' }).format(new Date(order.updatedAt)) %></td>
+                          <% if(order.status === 'In Progress') { %>
+                            <td>
+                              <a href="/admin/cart/edit/<%= order._id %>" title="Edit" class="btn btn-primary">
+                                <i class="fas fa-pencil-alt"></i>
+                              </a>
+                            </td>
+                          <% } %>
+                      </tr>
+                      <% count++; %>
+                      <% } %>        
+                  </tbody>
+                  <tfoot>
+                      <tr></tr>
+                  </tfoot>
+              </table>
+          </div>
+          <% } %>
+          <div class="row">
+            <div class="col-md-6 col-lg-12">
+                <nav class="d-lg-flex justify-content-lg-end dataTables_paginate paging_simple_numbers">
+                    <ul class="pagination">
+                      <% if (currentPage > 1) { %>
+                          <li class="page-item">
+                              <a class="page-link" href="<%= createPageLink(currentPage - 1) %>">Previous</a>
+                          </li>
+                      <% } %>
+                      <% for (let pageNum of specifiedPages) { %>
+                          <li class="page-item <%= pageNum === currentPage ? 'active' : '' %>">
+                              <% if (pageNum === "...") { %>
+                                  <span class="page-link"><%= pageNum %></span>
+                              <% } else { %>
+                                  <a class="page-link" href="<%= createPageLink(pageNum) %>"><%= pageNum %></a>
+                              <% } %>
+                          </li>
+                      <% } %>
+                      <% if (currentPage < totalPages) { %>
+                          <li class="page-item">
+                              <a class="page-link" href="<%= createPageLink(currentPage + 1) %>">Next</a>
+                          </li>
+                      <% } %>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+      </div>
+  </div>
+</div>
+
+<%- include("../layout/Footer.ejs")%>

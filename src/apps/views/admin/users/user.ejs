@@ -1,0 +1,98 @@
+<%- include("../layout/Header.ejs", {title: "User Management"})%>
+
+<div class="container-fluid">
+  <h3 class="text-dark mb-4"></h3>
+  <div class="card shadow">
+    <p class="text-start text-primary m-0 fw-bold">User Info</p>
+    <form action="/admin/users" method="GET" class="row g-3">
+        <div class="col-md-6">
+            <input class="form-control" type="text" value="<%= searchParams.email || '' %>" placeholder="Email" name="email">
+        </div>
+        <div style="text-align: center;">
+            <button type="submit" class="btn btn-primary" style="width: 100px;">Submit</button>
+        </div>
+    </form>
+      <div class="card-body">
+        <% if (totalUsers === 0) { %>
+            <p class="text-center">Users have not registered yet.</p>
+        <% } else { %>
+          <div class="table-responsive table mt-2" id="dataTable" role="grid" aria-describedby="dataTable_info">
+              <table class="table my-0 text-center table-bordered table-striped table-hover" id="dataTable">
+                  <thead>
+                      <tr>
+                          <th>ID</th>
+                          <th>Email</th>
+                          <th>Name</th>
+                          <th>Total Order</th>
+                          <th>Total amount</th>
+                          <th>Action</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                    <% let count = 1 + limit * (currentPage - 1); %>
+                    <% for (user of users) { %>
+                      <tr>
+                          <td><%= count %></td>
+                          <td><%= user.email %></td>
+                          <td><%= user.first_name %> <%= user.last_name %></td>  
+                          <td><%= user.totalOrders %></td>
+                          <td><%= user.totalSpent %>$</td>                        
+                          <td>
+                            <a class="btn btn-danger del-button" onclick="confirmDelete('<%= user._id %>', '<%= user.first_name %> <%= user.last_name %>')">
+                                <i class="fas fa-trash-alt"></i>
+                            </a>
+                            </td>
+                      </tr>
+                      <% count++; %>
+                      <% } %>         
+                  </tbody>
+                  <tfoot>
+                      <tr></tr>
+                  </tfoot>
+              </table>
+          </div>
+          <% } %>
+          <div class="row">
+              <div class="col-md-6 col-lg-12">
+                  <nav class="d-lg-flex justify-content-lg-end dataTables_paginate paging_simple_numbers">
+                      <ul class="pagination">
+                        <% if (currentPage > 1) { %>
+                            <li class="page-item">
+                                <a class="page-link" href="/admin/users?page=<%= currentPage - 1 %>">Previous</a>
+                            </li>
+                        <% } %>
+                        <% for (let pageNum of specifiedPages) { %>
+                            <li class="page-item <%= pageNum === currentPage ? 'active' : '' %>">
+                                <% if (pageNum === "...") { %>
+                                    <span class="page-link"><%= pageNum %></span>
+                                <% } else { %>
+                                    <a class="page-link" href="/admin/users?page=<%= pageNum %>"><%= pageNum %></a>
+                                <% } %>
+                            </li>
+                        <% } %>
+                        <% if (currentPage < totalPages) { %>
+                            <li class="page-item">
+                                <a class="page-link" href="/admin/users?page=<%= currentPage + 1 %>">Next</a>
+                            </li>
+                        <% } %>
+                      </ul>
+                  </nav>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
+</div>
+
+<script>
+    function confirmDelete(id, userName) {
+        if (confirm("Are you sure want to delete " + userName + "?")) {
+            window.location.href = "/admin/users/delete/" + id;
+        } else {
+            return false;
+        }
+    }
+</script>
+
+
+<%- include("../layout/Footer.ejs")%>       

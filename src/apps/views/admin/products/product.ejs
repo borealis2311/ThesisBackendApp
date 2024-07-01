@@ -1,0 +1,154 @@
+<%- include("../layout/Header.ejs", {title: "Product Management"})%>
+<% const createPageLink = (page) => `/admin/products?page=${page}&${queryString}`; %>
+
+<div class="container-fluid">
+  <h3 class="text-dark mb-4"></h3>
+  <div class="card shadow">
+    <div class="card-header text-center py-3">
+      <% if (totalCategories === 0) { %>
+          <button class="btn btn-primary" type="button" onclick="alert('Please add a category first.')">
+              <i class="fas fa-plus"></i>&nbsp; Add
+          </button>
+      <% } else { %>
+          <a href="/admin/products/create" class="btn btn-primary" type="button">
+              <i class="fas fa-plus"></i>&nbsp; Add
+          </a>
+      <% } %>
+      <p class="text-start text-primary m-0 fw-bold">Product Info</p>
+      <form action="/admin/products" method="GET" class="row g-3">
+        <div class="col-md-6">
+            <div class="row">
+                <div class="col">
+                    <input class="form-control" type="number" placeholder="Min Price" value="<%= searchParams.minPrice || '' %>" name="minPrice">
+                </div>
+                <div class="col">
+                    <input class="form-control" type="number" placeholder="Max Price" value="<%= searchParams.maxPrice || '' %>" name="maxPrice">
+                </div>
+            </div>
+            <br/>
+            <input class="form-control" type="text" value="<%= searchParams.name || '' %>" placeholder="Name" name="name">
+        </div>
+        <div class="col-md-6">
+            <div class="row">
+                <div class="col">
+                    <select class="form-control" id="featured" name="featured">
+                        <option value="">Featured</option>
+                        <option value="true" <%= searchParams.featured === 'true' ? 'selected' : '' %>>Yes</option>
+                        <option value="false" <%= searchParams.featured === 'false' ? 'selected' : '' %>>No</option>
+                    </select>
+                </div>
+                <div class="col">
+                    <select class="form-control" id="is_stock" name="is_stock">
+                        <option value="">Status</option>
+                        <option value="true" <%= searchParams.is_stock === 'true' ? 'selected' : '' %>>In Stock</option>
+                        <option value="false" <%= searchParams.is_stock === 'false' ? 'selected' : '' %>>Out of Stock</option>
+                    </select>
+                </div>
+            </div>
+            <br/>
+            <select name="category" id="category" class="form-control">
+                <option value="" <%= searchParams.category === null ? 'selected' : '' %>>Category</option>
+                <% for(category of categories){ %>
+                    <option value="<%= category._id %>" <%= searchParams.category === category._id ? 'selected' : '' %>><%= category.title %></option>
+                <% } %>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Filter</button>
+    </form>
+    
+  </div>
+  
+      <div class="card-body">
+        <% if (totalProducts === 0) { %>
+          <p class="text-center">No products available.</p>
+        <% } else { %>
+          <div class="table-responsive table mt-2" id="dataTable" role="grid" aria-describedby="dataTable_info">
+              <table class="table my-0 text-center table-bordered table-striped table-hover" id="dataTable">
+                  <thead>
+                      <tr>
+                          <th>ID</th>
+                          <th>Image</th>
+                          <th>Name</th>
+                          <th>Price</th>
+                          <th>Category Type</th>
+                          <th>Featured</th>
+                          <th>Status</th>
+                          <th>Action</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                    <% let count = 1 + limit * (currentPage - 1); %>
+                    <% for(product of products){ %>
+                    <tr>
+                      <th scope="row"><%= count %></th>
+                      <td style="text-align: center"><img width="117" height="117" src="<%= product.image %>" /></td>
+                      <td><%= product.name %></td>
+                      <td><%= product.price %>$</td>
+                      <td><%= product.category_id.title %></td>
+                      <td>
+                        <span class="label <%= product.featured ? 'label-success' : 'label-danger' %>">
+                          <%= product.featured ? 'Yes' : 'No' %>
+                        </span>
+                      </td>
+                      <td>
+                        <span class="label <%= product.is_stock ? 'label-success' : 'label-danger' %>">
+                          <%= product.is_stock ? 'In stock' : 'Out of stock' %>
+                        </span>
+                      </td>
+                      <td>
+                        <a href="/admin/products/edit/<%= product._id %>" title="Edit" class="btn btn-primary">
+                          <i class="fas fa-pencil-alt"></i>
+                      </a>
+                        <a class="btn btn-danger del-button" onclick="confirmDelete('<%= product._id %>', '<%= product.name %>')">
+                          <i class="fas fa-trash-alt"></i>
+                        </a>
+                      </td>
+                    </tr>
+                    <% count++; %>
+                  <% } %>                      
+                  </tbody>
+                  <tfoot>
+                      <tr></tr>
+                  </tfoot>
+              </table>
+          </div>
+          <% } %>
+          <div class="row">
+            <div class="col-md-6 col-lg-12">
+                <nav class="d-lg-flex justify-content-lg-end dataTables_paginate paging_simple_numbers">
+                    <ul class="pagination">
+                        <% if (currentPage > 1) {%>
+                        <li class="page-item "><a class="page-link" href="<%= createPageLink(currentPage - 1) %>">Previous</a></li>
+                        <% }%>
+                        <% for (let pageNum of specifiedPages) { %>
+                            <li class="page-item <%= pageNum === currentPage ? 'active' : '' %>">
+                                <% if(pageNum==="..."){ %>
+                                <span class="page-link"><%= pageNum %></span>
+                                <%}else{%>
+                                    <a class="page-link" href="<%= createPageLink(pageNum) %>"><%= pageNum %></a>    
+                                <%}%>
+                            </li>
+                        <% } %>
+                        <% if (currentPage < totalPages) {%>
+                        <li class="page-item"><a class="page-link" href="<%= createPageLink(currentPage + 1) %>">Next</a></li>
+                        <% }%>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+      </div>
+  </div>
+</div>
+</div>
+
+<script>
+  function confirmDelete(id, name) {
+      if (confirm("Are you sure you want to delete product " + name + "? ")) {
+          window.location.href = "/admin/products/delete/" + id;
+      } else {
+          return false;
+      }
+  }
+</script>
+
+<%- include("../layout/Footer.ejs") %>
